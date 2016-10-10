@@ -75,6 +75,9 @@ import net.imglib2.view.composite.CompositeView;
 import net.imglib2.view.composite.GenericComposite;
 import net.imglib2.view.composite.NumericComposite;
 import net.imglib2.view.composite.RealComposite;
+import net.imglib2.view.experimental.ArrangedView;
+import net.imglib2.view.experimental.CombinedView;
+import net.imglib2.view.experimental.TiledView;
 
 /**
  * Create light-weight views into {@link RandomAccessible RandomAccessibles}.
@@ -92,6 +95,28 @@ import net.imglib2.view.composite.RealComposite;
  */
 public class Views
 {
+	// --- EXPERIMENTAL ---
+	public static < T > TiledView< T > tile( final RandomAccessibleInterval< T > source, final long... blockSize )
+	{
+		return new TiledView<>( source, blockSize );
+	}
+
+	public static < T > ArrangedView< T > arrange( final List< RandomAccessibleInterval< T > > source, final long... grid )
+	{
+		return new ArrangedView<>( source, grid );
+	}
+
+	public static < T > CombinedView< T > combine( final RandomAccessibleInterval< RandomAccessibleInterval< T > > source )
+	{
+		return new CombinedView<>( source );
+	}
+
+	public static < T > CombinedView< T > combine( final List< RandomAccessibleInterval< T > > source, final long... grid )
+	{
+		return new CombinedView<>( arrange( source, grid ) );
+	}
+	// --------------------
+
 	/**
 	 * Returns a {@link RealRandomAccessible} using interpolation
 	 *
@@ -1051,10 +1076,7 @@ public class Views
 	 *
 	 * @return {@link TransformView} containing the result.
 	 */
-	public static < T > TransformView< T > shear(
-			final RandomAccessible< T > source,
-			final int shearDimension,
-			final int referenceDimension )
+	public static < T > TransformView< T > shear( final RandomAccessible< T > source, final int shearDimension, final int referenceDimension )
 	{
 		final ShearTransform transform = new ShearTransform( source.numDimensions(), shearDimension, referenceDimension );
 		return new TransformView< T >( source, transform.inverse() );
@@ -1074,10 +1096,7 @@ public class Views
 	 *
 	 * @return {@link TransformView} containing the result.
 	 */
-	public static < T > TransformView< T > unshear(
-			final RandomAccessible< T > source,
-			final int shearDimension,
-			final int referenceDimension )
+	public static < T > TransformView< T > unshear( final RandomAccessible< T > source, final int shearDimension, final int referenceDimension )
 	{
 		final InverseShearTransform transform = new InverseShearTransform( source.numDimensions(), shearDimension, referenceDimension );
 		return new TransformView< T >( source, transform.inverse() );
@@ -1101,11 +1120,7 @@ public class Views
 	 *         interval's dimension are determined by applying the
 	 *         {@link ShearTransform#transform} method on the input interval.
 	 */
-	public static < T > IntervalView< T > shear(
-			final RandomAccessible< T > source,
-			final Interval interval,
-			final int shearDimension,
-			final int referenceDimension )
+	public static < T > IntervalView< T > shear( final RandomAccessible< T > source, final Interval interval, final int shearDimension, final int referenceDimension )
 	{
 		final ShearTransform transform = new ShearTransform( source.numDimensions(), shearDimension, referenceDimension );
 		return Views.interval( Views.shear( source, shearDimension, referenceDimension ), transform.transform( new BoundingBox( interval ) ).getInterval() );
@@ -1129,11 +1144,7 @@ public class Views
 	 *         interval's dimension are determined by applying the
 	 *         {@link ShearTransform#transform} method on the input interval.
 	 */
-	public static < T > IntervalView< T > unshear(
-			final RandomAccessible< T > source,
-			final Interval interval,
-			final int shearDimension,
-			final int referenceDimension )
+	public static < T > IntervalView< T > unshear( final RandomAccessible< T > source, final Interval interval, final int shearDimension, final int referenceDimension )
 	{
 		final InverseShearTransform transform = new InverseShearTransform( source.numDimensions(), shearDimension, referenceDimension );
 		return Views.interval( Views.unshear( source, shearDimension, referenceDimension ), transform.transform( new BoundingBox( interval ) ).getInterval() );
@@ -1153,9 +1164,7 @@ public class Views
 	 *
 	 * @return {@link IntervalView} of permuted source.
 	 */
-	public static < T > IntervalView< T > permuteCoordinates(
-			final RandomAccessibleInterval< T > source,
-			final int[] permutation )
+	public static < T > IntervalView< T > permuteCoordinates( final RandomAccessibleInterval< T > source, final int[] permutation )
 	{
 		assert AbstractPermutationTransform.checkBijectivity( permutation ): "Non-bijective LUT passed for coordinate permuation.";
 		assert PermutationTransform.checkInterval( source, permutation ): "Source interval boundaries do not match permutation.";
@@ -1180,10 +1189,7 @@ public class Views
 	 *
 	 * @return {@link IntervalView} of permuted source.
 	 */
-	public static < T > IntervalView< T > permuteCoordinates(
-			final RandomAccessibleInterval< T > source,
-			final int[] permutation,
-			final int d )
+	public static < T > IntervalView< T > permuteCoordinates( final RandomAccessibleInterval< T > source, final int[] permutation, final int d )
 	{
 		assert AbstractPermutationTransform.checkBijectivity( permutation ): "Non-bijective LUT passed for coordinate permuation.";
 		assert source.min( d ) == 0: "Source with min[d] coordinate != 0 passed to coordinate permutation.";
@@ -1208,9 +1214,7 @@ public class Views
 	 *
 	 * @return {@link IntervalView} of permuted source.
 	 */
-	public static < T > IntervalView< T > permuteCoordinatesInverse(
-			final RandomAccessibleInterval< T > source,
-			final int[] permutation )
+	public static < T > IntervalView< T > permuteCoordinatesInverse( final RandomAccessibleInterval< T > source, final int[] permutation )
 	{
 		assert AbstractPermutationTransform.checkBijectivity( permutation ): "Non-bijective LUT passed for coordinate permuation.";
 		assert PermutationTransform.checkInterval( source, permutation ): "Source interval boundaries do not match permutation.";
@@ -1235,10 +1239,7 @@ public class Views
 	 *
 	 * @return {@link IntervalView} of permuted source.
 	 */
-	public static < T > IntervalView< T > permuteCoordinateInverse(
-			final RandomAccessibleInterval< T > source,
-			final int[] permutation,
-			final int d )
+	public static < T > IntervalView< T > permuteCoordinateInverse( final RandomAccessibleInterval< T > source, final int[] permutation, final int d )
 	{
 		assert AbstractPermutationTransform.checkBijectivity( permutation ): "Non-bijective LUT passed for coordinate permuation.";
 		assert source.min( d ) == 0: "Source with min[d] coordinate != 0 passed to coordinate permutation.";
@@ -1257,9 +1258,7 @@ public class Views
 	 * @param sourceB
 	 * @return
 	 */
-	public static < A, B > RandomAccessible< Pair< A, B > > pair(
-			final RandomAccessible< A > sourceA,
-			final RandomAccessible< B > sourceB )
+	public static < A, B > RandomAccessible< Pair< A, B > > pair( final RandomAccessible< A > sourceA, final RandomAccessible< B > sourceB )
 	{
 		return new RandomAccessiblePair< A, B >( sourceA, sourceB );
 	}
