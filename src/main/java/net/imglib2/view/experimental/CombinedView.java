@@ -62,6 +62,10 @@ import net.imglib2.view.Views;
  */
 public class CombinedView< T > extends AbstractInterval implements RandomAccessibleInterval< T >, IterableInterval< T >, View
 {
+	// TODO: Consider supporting different block sizes: kd-tree? where k <= n is
+	// the number of dimensions specified as "irregular" by the user (or
+	// determined as such by the view during construction).
+
 	private final RandomAccessibleInterval< ? extends RandomAccessibleInterval< T > > source;
 
 	protected final long numElements;
@@ -157,6 +161,8 @@ public class CombinedView< T > extends AbstractInterval implements RandomAccessi
 
 		private final long[] blockSize;
 
+		// TODO: Replace by trove's TLongObjectHashMap? (check imglib2
+		// dependencies)
 		private final HashMap< Long, RandomAccess< T > > blockAccesses;
 
 		private final long[] tempIndex;
@@ -234,8 +240,6 @@ public class CombinedView< T > extends AbstractInterval implements RandomAccessi
 		}
 	}
 
-	// NB: This cursor speeds up iteration if source is ArrangedView (which has
-	// a flat list of RAIs as source).
 	public static class CombinedViewCursor< T > extends AbstractCursor< T >
 	{
 		private final IterableInterval< ? extends RandomAccessibleInterval< T > > source;
