@@ -62,7 +62,7 @@ import net.imglib2.view.Views;
  */
 public class CombinedView< T > extends AbstractInterval implements RandomAccessibleInterval< T >, IterableInterval< T >, View
 {
-	private final RandomAccessibleInterval< RandomAccessibleInterval< T > > source;
+	private final RandomAccessibleInterval< ? extends RandomAccessibleInterval< T > > source;
 
 	protected final long numElements;
 
@@ -70,9 +70,9 @@ public class CombinedView< T > extends AbstractInterval implements RandomAccessi
 
 	protected final long[] blockSize;
 
-	private IterableInterval< RandomAccessibleInterval< T > > sourceAsIterable;
+	private IterableInterval< ? extends RandomAccessibleInterval< T > > sourceAsIterable;
 
-	public CombinedView( final RandomAccessibleInterval< RandomAccessibleInterval< T > > source )
+	public CombinedView( final RandomAccessibleInterval< ? extends RandomAccessibleInterval< T > > source )
 	{
 		super( source.numDimensions() );
 		this.source = source;
@@ -92,7 +92,7 @@ public class CombinedView< T > extends AbstractInterval implements RandomAccessi
 		blockNumElements = blockNumEl;
 	}
 
-	public RandomAccessibleInterval< RandomAccessibleInterval< T > > getSource()
+	public RandomAccessibleInterval< ? extends RandomAccessibleInterval< T > > getSource()
 	{
 		return source;
 	}
@@ -151,9 +151,9 @@ public class CombinedView< T > extends AbstractInterval implements RandomAccessi
 
 	public static class CombinedViewRandomAccess< T > extends Point implements RandomAccess< T >
 	{
-		private final RandomAccessibleInterval< RandomAccessibleInterval< T > > source;
+		private final RandomAccessibleInterval< ? extends RandomAccessibleInterval< T > > source;
 
-		private final RandomAccess< RandomAccessibleInterval< T > > sourceAccess;
+		private final RandomAccess< ? extends RandomAccessibleInterval< T > > sourceAccess;
 
 		private final long[] blockSize;
 
@@ -165,7 +165,7 @@ public class CombinedView< T > extends AbstractInterval implements RandomAccessi
 
 		private RandomAccess< T > tempBlockAccess;
 
-		public CombinedViewRandomAccess( final RandomAccessibleInterval< RandomAccessibleInterval< T > > source, final long[] blockSize )
+		public CombinedViewRandomAccess( final RandomAccessibleInterval< ? extends RandomAccessibleInterval< T > > source, final long[] blockSize )
 		{
 			super( source.numDimensions() );
 			this.source = source;
@@ -238,9 +238,9 @@ public class CombinedView< T > extends AbstractInterval implements RandomAccessi
 	// a flat list of RAIs as source).
 	public static class CombinedViewCursor< T > extends AbstractCursor< T >
 	{
-		private final IterableInterval< RandomAccessibleInterval< T > > source;
+		private final IterableInterval< ? extends RandomAccessibleInterval< T > > source;
 
-		private final Cursor< RandomAccessibleInterval< T > > sourceCursor;
+		private final Cursor< ? extends RandomAccessibleInterval< T > > sourceCursor;
 
 		private final long[] blockSize;
 
@@ -250,7 +250,7 @@ public class CombinedView< T > extends AbstractInterval implements RandomAccessi
 
 		private Cursor< T > tempBlockCursor;
 
-		public CombinedViewCursor( final IterableInterval< RandomAccessibleInterval< T > > source, final long[] blockSize, final long blockNumElements )
+		public CombinedViewCursor( final IterableInterval< ? extends RandomAccessibleInterval< T > > source, final long[] blockSize, final long blockNumElements )
 		{
 			super( source.numDimensions() );
 			this.source = source;

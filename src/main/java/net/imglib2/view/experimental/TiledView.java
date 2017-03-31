@@ -72,6 +72,12 @@ public class TiledView< T > extends AbstractInterval implements RandomAccessible
 	public TiledView( final RandomAccessibleInterval< T > source, final long... blockSize )
 	{
 		super( source.numDimensions() );
+
+		// TODO: Fill missing block sizes with singleton dimensions. (Or
+		// generalize the entire view to support hyperslicing/hypercubing when
+		// #source dimensions > #block dimensions?)
+		assert source.numDimensions() == blockSize.length;
+
 		this.source = source;
 		this.blockSize = blockSize;
 		for ( int d = 0; d < n; ++d )

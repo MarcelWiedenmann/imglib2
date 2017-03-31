@@ -51,13 +51,8 @@ import net.imglib2.util.IntervalIndexer;
 /**
  * Arranges a flat list of {@link RandomAccessibleInterval}s in an <em>n</em>
  * -dimensional {@link RandomAccessibleInterval} of
-<<<<<<< HEAD
- * {@link RandomAccessibleInterval}s, i.e. an <em>n</em>-dimensional grid whose
- * cells are {@link RandomAccessibleInterval}s.
-=======
  * {@link RandomAccessibleInterval}s, i.e. in an <em>n</em>-dimensional grid
  * whose cells are {@link RandomAccessibleInterval}s.
->>>>>>> WIP: Tiled, arranged and combined views
  *
  * @param <T>
  *            the pixel type
@@ -67,12 +62,20 @@ import net.imglib2.util.IntervalIndexer;
  */
 public class ArrangedView< T > extends AbstractInterval implements RandomAccessibleInterval< RandomAccessibleInterval< T > >, IterableInterval< RandomAccessibleInterval< T > >, View
 {
+	public static < T > ArrangedView< T > arrangeAlongAxis( final List< ? extends RandomAccessibleInterval< T > > source, final int axis )
+	{
+		final long[] grid = new long[ axis + 1 ];
+		Arrays.fill( grid, 0, axis, 1 );
+		grid[ axis ] = source.size();
+		return new ArrangedView<>( source, grid );
+	}
+
 	private final RandomAccessibleInterval< T >[] source;
 
 	private final long[] grid;
 
 	@SuppressWarnings( "unchecked" )
-	public ArrangedView( final List< RandomAccessibleInterval< T > > source, final long... grid )
+	public ArrangedView( final List< ? extends RandomAccessibleInterval< T > > source, final long... grid )
 	{
 		super( grid );
 		this.source = source.toArray( new RandomAccessibleInterval[ source.size() ] );
