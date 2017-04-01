@@ -49,20 +49,18 @@ import net.imglib2.View;
 import net.imglib2.util.IntervalIndexer;
 
 /**
- * Arranges a flat list of {@link RandomAccessibleInterval}s in an <em>n</em>
- * -dimensional {@link RandomAccessibleInterval} of
- * {@link RandomAccessibleInterval}s, i.e. in an <em>n</em>-dimensional grid
- * whose cells are {@link RandomAccessibleInterval}s.
+ * Arranges a flat list of typed objects in an <em>n</em>-dimensional
+ * {@link RandomAccessibleInterval} of the same type.
  *
  * @param <T>
- *            the pixel type
+ *            the type
  *
  * @author Marcel Wiedenmann (University of Konstanz)
  * @author Christian Dietz (University of Konstanz)
  */
-public class ArrangedView< T > extends AbstractInterval implements RandomAccessibleInterval< RandomAccessibleInterval< T > >, IterableInterval< RandomAccessibleInterval< T > >, View
+public class ArrangedView< T > extends AbstractInterval implements RandomAccessibleInterval< T >, IterableInterval< T >, View
 {
-	public static < T > ArrangedView< T > arrangeAlongAxis( final List< ? extends RandomAccessibleInterval< T > > source, final int axis )
+	public static < T > ArrangedView< T > arrangeAlongAxis( final List< ? extends T > source, final int axis )
 	{
 		final long[] grid = new long[ axis + 1 ];
 		Arrays.fill( grid, 0, axis, 1 );
@@ -70,19 +68,19 @@ public class ArrangedView< T > extends AbstractInterval implements RandomAccessi
 		return new ArrangedView<>( source, grid );
 	}
 
-	private final RandomAccessibleInterval< T >[] source;
+	private final T[] source;
 
 	private final long[] grid;
 
 	@SuppressWarnings( "unchecked" )
-	public ArrangedView( final List< ? extends RandomAccessibleInterval< T > > source, final long... grid )
+	public ArrangedView( final List< ? extends T > source, final long... grid )
 	{
 		super( grid );
-		this.source = source.toArray( new RandomAccessibleInterval[ source.size() ] );
+		this.source = ( T[] ) source.toArray( new Object[ source.size() ] );
 		this.grid = grid;
 	}
 
-	public List< RandomAccessibleInterval< T > > getSource()
+	public List< T > getSource()
 	{
 		return Arrays.asList( source );
 	}
@@ -106,7 +104,7 @@ public class ArrangedView< T > extends AbstractInterval implements RandomAccessi
 	}
 
 	@Override
-	public RandomAccessibleInterval< T > firstElement()
+	public T firstElement()
 	{
 		return source[ 0 ];
 	}
@@ -135,13 +133,13 @@ public class ArrangedView< T > extends AbstractInterval implements RandomAccessi
 		return cursor();
 	}
 
-	public static class ArrangedViewRandomAccess< T > extends Point implements RandomAccess< RandomAccessibleInterval< T > >
+	public static class ArrangedViewRandomAccess< T > extends Point implements RandomAccess< T >
 	{
-		private final RandomAccessibleInterval< T >[] source;
+		private final T[] source;
 
 		private final long[] grid;
 
-		public ArrangedViewRandomAccess( final RandomAccessibleInterval< T >[] source, final long[] grid )
+		public ArrangedViewRandomAccess( final T[] source, final long[] grid )
 		{
 			super( grid.length );
 			this.source = source;
@@ -155,8 +153,13 @@ public class ArrangedView< T > extends AbstractInterval implements RandomAccessi
 			grid = ra.grid;
 		}
 
+		public T get( final int flatIndex )
+		{
+			return source[ flatIndex ];
+		}
+
 		@Override
-		public RandomAccessibleInterval< T > get()
+		public T get()
 		{
 			final int i = ( int ) IntervalIndexer.positionToIndex( position, grid );
 			return source[ i ];
@@ -175,9 +178,9 @@ public class ArrangedView< T > extends AbstractInterval implements RandomAccessi
 		}
 	}
 
-	public static class ArrangedViewCursor< T > extends AbstractCursor< RandomAccessibleInterval< T > >
+	public static class ArrangedViewCursor< T > extends AbstractCursor< T >
 	{
-		private final RandomAccessibleInterval< T >[] source;
+		private final T[] source;
 
 		private final long[] grid;
 
@@ -185,7 +188,7 @@ public class ArrangedView< T > extends AbstractInterval implements RandomAccessi
 
 		private int i;
 
-		public ArrangedViewCursor( final RandomAccessibleInterval< T >[] source, final long[] grid )
+		public ArrangedViewCursor( final T[] source, final long[] grid )
 		{
 			super( grid.length );
 			this.source = source;
@@ -204,7 +207,7 @@ public class ArrangedView< T > extends AbstractInterval implements RandomAccessi
 		}
 
 		@Override
-		public RandomAccessibleInterval< T > get()
+		public T get()
 		{
 			return source[ i ];
 		}
