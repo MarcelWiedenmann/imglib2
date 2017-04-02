@@ -101,7 +101,7 @@ public class Views
 		return new TiledView<>( source, blockSize );
 	}
 
-	public static < T > ArrangedView< T > arrange( final List< RandomAccessibleInterval< T > > source, final long... grid )
+	public static < T > ArrangedView< T > arrange( final List< T > source, final long... grid )
 	{
 		return new ArrangedView<>( source, grid );
 	}
@@ -1265,17 +1265,17 @@ public class Views
 
 	/**
 	 * Provide an (<em>n + m</em>)-dimensional {@link RandomAccessible} of T as
-	 * an <em>m</em>-dimensional {@link RandomAccessible} of
-	 * <em>n</em>-dimensional {@link RandomAccessible RandomAccessibles} of T.
+	 * an <em>m</em>-dimensional {@link RandomAccessible} of <em>n</em>
+	 * -dimensional {@link RandomAccessible RandomAccessibles} of T.
 	 *
 	 * @param source
-	 * @param axes the axes to become the inner axes (embedded into the co-domain)
+	 * @param axes
+	 *            the axes to become the inner axes (embedded into the
+	 *            co-domain)
 	 *
 	 * @return
 	 */
-	public static < T > RandomAccessible< ? extends RandomAccessible< T > > hyperSlices(
-			final RandomAccessible< T > source,
-			final int... axes )
+	public static < T > RandomAccessible< ? extends RandomAccessible< T > > hyperSlices( final RandomAccessible< T > source, final int... axes )
 	{
 		return new HyperSlicesView< T >( source, axes );
 	}

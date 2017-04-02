@@ -62,6 +62,8 @@ import net.imglib2.view.Views;
  */
 public class CombinedView< T > extends AbstractInterval implements RandomAccessibleInterval< T >, IterableInterval< T >, View
 {
+	// TODO Implement SubIntervalIterable<T>?
+
 	// TODO: Consider supporting different block sizes: kd-tree? where k <= n is
 	// the number of dimensions specified as "irregular" by the user (or
 	// determined as such by the view during construction).
